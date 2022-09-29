@@ -1,0 +1,78 @@
+<html>
+<script>
+connection_list = {};
+const guacamole_base_path = document.location.origin + "/guacamole/";
+function parse_connection_list(data) {
+    for (i in data['childConnections']){
+        item = data['childConnections'][i];
+        console.log(data['childConnections'][i]);
+        connection_list[item['name']] = item;
+ 	}
+}
+
+function make_client_url(id) {
+    dsthosturl = '#/client/'+btoa( id + '\0' + 'c' + '\0' + 'quickconnect').replaceAll('=', '');
+	  console.log(document.location.origin + dsthosturl);
+	  document.getElementById('message').innerHTML = '<a href="'+ guacamole_base_path + dsthosturl + '">Connect<a>';
+	  document.location.href = guacamole_base_path + dsthosturl;
+}
+
+function create_qc_connection(type,host,port) {
+	uri = type + '://' + host + '/';
+	if (!(port == null || port == 0)) {
+		uri = type + '://' + host + ':' + port +  '/';
+	}
+	const options = {
+        	method: 'POST',
+	        body: 'uri=' + uri,
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+		}
+	};
+
+	if (!(uri in connection_list)) {
+		fetch(guacamole_base_path + 'api/session/ext/quickconnect/create?token=' + JSON.parse(localStorage['GUAC_AUTH'])['authToken'], options)
+        		  .then(response => response.json())
+	        	  .then(data => make_client_url(data['identifier']));
+	}
+	else {
+		console.log("connection uri already exists, reusing connection id#:"+connection_list[uri]['identifier']);
+		make_client_url(connection_list[uri]['identifier']);
+	}
+	//update_connection_list();
+}
+
+function connect_to_client() {
+    if ( document.location.hash.length != 0 ){
+        if (document.location.hash.split('#')[1].split(':').length == 3) { create_qc_connection(document.location.hash.split('#')[1].split(':')[0], document.location.hash.split('#')[1].split(':')[1], document.location.hash.split('#')[1].split(':')[2] );}
+            if (document.location.hash.split('#')[1].split(':').length == 2) { create_qc_connection(document.location.hash.split('#')[1].split(':')[0], document.location.hash.split('#')[1].split(':')[1]); }
+	}
+
+}
+
+function update_connection_list() {
+    if ("GUAC_AUTH" in localStorage ) {
+
+    const headers = {
+		    'Guacamole-Token': JSON.parse(localStorage['GUAC_AUTH'])['authToken']
+    };
+
+    fetch(guacamole_base_path + 'api/session/data/quickconnect/connectionGroups/ROOT/tree',{headers})
+	      .catch(error => document.getElementById('message').innerHTML = '<a href="/guacamole/">Login<a>')
+	      .then(response => response.json())
+	      .then(data => parse_connection_list(data))
+        .then(data1 => connect_to_client());
+
+	  } else {
+		    console.log("Not logged into Guacamole, giving up");
+		    document.getElementById('message').innerHTML = '<a href="/guacamole/">Login<a>';
+	  }
+
+
+}
+</script>
+<body onload="update_connection_list();">
+<div id="message"></div>
+<div id="status" style="display:none"></div>
+</body>
+</html>
