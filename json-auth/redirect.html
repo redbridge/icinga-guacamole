@@ -1,0 +1,15 @@
+<html>
+<head>
+<script>
+function redirect_to_guacamole() {
+	backend = 'json'; baseurl = 'http://guacamole.example.com';
+	if (window.location.hash.indexOf('dst=') != -1) {
+		host = window.location.hash.split('dst=')[1];
+    dsthosturl = baseurl + '/guacamole/#/client/' + btoa(host+'\0' + 'c' + '\0' + backend).replace('=','');
+		console.log(dsthosturl);
+	}
+}
+</script>
+<body onload='redirect_to_guacamole();'><p>No client connection specified</p>
+</body>
+</html>
