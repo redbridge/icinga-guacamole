@@ -1,0 +1,4 @@
+Name: Guacamole
+Version: 0.1.0
+Description: Guacamole module for Icinga Web 2
+ This module provides a Guacamole import source for Icinga Director
