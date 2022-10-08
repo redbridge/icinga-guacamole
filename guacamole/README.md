@@ -1,4 +1,13 @@
-# Icinga Director ImportSource for Guacamole
+# Icinga Director ImportSource for Apache Guacamole
+
+## Why?
+
+The built-in REST API ImportSource does not currently support POST requests without the body being automatically encoded into JSON. Furthermore, the Guacamole API requires an authentication token to be retrieved before other operations can be performed which is also unsupported.
+
+## Tested with
+- Icinga Web 2 2.11.1
+- Director 1.8.1
+- Guacamole 1.4.0
 
 ## Installation
 
