@@ -1,0 +1,3 @@
+This ImportSource would not be possible without the following projects or source code as its source code is derived from them:
+https://github.com/credativ/icingaweb2-module-azure
+https://github.com/Icinga/icingaweb2-module-director/blob/master/library/Director/Import/ImportSourceRestApi.php
